@@ -1,0 +1,52 @@
+<html>
+<header>
+    <title>Kmeans</title>
+    <link rel="stylesheet" type="text/css" href="static/style.css"/>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="static/script.js"></script>
+</header>
+<body>
+  <div id="control">
+    <div>
+        <span>dataset</span>
+        <select id="dataset" onchange="set_params()">
+            {% for dataset in datasets %}
+                <option>{{dataset}}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div>
+        <span>n_clusters</span>
+        <input type="number" id="n_clusters" value="2" min="2" max="5" onchange="set_params()"> 
+    </div>
+    <div>
+        <span id="step-label">step:</span>
+        <span id="step">0</span>
+    </div>
+    <div>
+        <button id="back" onclick="back()">back</button>
+        <button id="run" onclick="run(0)">run</button>
+        <button id="forward" onclick="step()">forward</button>
+    </div>
+  </div>
+  <div id="scatterplot">
+</div>
+</body>
+
+<script>
+    var colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2",  "#7f7f7f", "#bcbd22", "#17becf"]
+    var dataset = 'blobs'
+    var max_steps = {{max_steps}}
+    const margin = {top: 30, right: 30, bottom: 70, left: 60},
+    width = 500 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+    const svg = d3.select("#scatterplot")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+    init_plot({{x_min}}, {{x_max}}, {{y_min}}, {{y_max}}, {{n_clusters}}, {{data|safe}}, {{centroids|safe}})
+</script>
+</html>
