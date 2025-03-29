@@ -23,10 +23,44 @@ function init_scales(x_min, x_max, y_min, y_max, n_clusters){
 
 // TODO: create x and y axes
 function init_axes(){
+  // Create x-axis
+  svg.append("g")
+  .attr("transform", "translate(0," + height + ")") 
+  .call(d3.axisBottom(x)); 
+
+  // Create y-axis
+  svg.append("g")
+    .call(d3.axisLeft(y));
 }
 
 // TODO: plot data and centroids, and display the current step number
 function update_vis(data, centroids, step_num){
+  // Plot points and color based on label
+  svg.append("g")
+        .selectAll("dot")
+        .data(data)
+        .join('circle')
+        .attr("cx", function(d) { return x(d.x); }) 
+        .attr("cy", function(d) { return y(d.y); })  
+        .attr("r", 4) 
+        .attr("stroke", "#3b3b3b") 
+        .attr("stroke-width", 1) 
+        .style("fill", function(d) { return color(d.label); });
+
+  // Plot centroids
+  svg.append("g")
+        .selectAll("centroid")
+        .data(centroids)
+        .join('circle')
+        .attr("cx", function(d) { return x(d.x); }) 
+        .attr("cy", function(d) { return y(d.y); }) 
+        .attr("r", 10)  // Make larger than normal points
+        .attr("stroke", "black") 
+        .attr("stroke-width", 2) 
+        .style("fill", function(d, i) { return color(i)}); // Color based on index in centroids
+
+  // Update step number in html
+  document.getElementById("step").innerText = step_num
 }
 
 function init_plot(x_min, x_max, y_min, y_max, n_clusters, data, centroids){
@@ -50,12 +84,12 @@ function set_params(){
         var results = JSON.parse(JSON.stringify((await response.json())))
         // TODO: initialize the plot from the results
         console.log(results)
-        // x_min = 
-        // x_max = 
-        // y_min = 
-        // x_max = 
-       // init_plot(x_min, x_max, y_min, y_max, n_clusters, dataset, centroids)
-        // init_plot(...)
+        x_min = results['x_min']
+        x_max = results['x_max']
+        y_min = results['y_min']
+        y_max = results['y_max']
+        centroids = results['centroids']
+        init_plot(x_min, x_max, y_min, y_max, n_clusters, dataset, centroids)
     })
 }
 
