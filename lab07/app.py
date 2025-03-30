@@ -57,25 +57,38 @@ def set_labels():
       # Assign label
       app.labels[i] = label # TODO: calculate labels from centroids
 
-def calculate_centroids():
-  # For each group of points, calculate the mean and assign this as the new centroid
-  # TODO 
+# def calculate_centroids():
+#   # For each group of points, calculate the mean and assign this as the new centroid
+#   # TODO 
 
-  return None
+#   return None
 
 def step():
     if not app.converged:
         if app.step == -1:
             # Randomly select n_clusters # of rows 
             app.centroids = app.data.sample(n=app.n_clusters).reset_index() # TODO: initialize centroids
+            app.centroids = app.centroids[['x', 'y']] # Keep only the x and y columns for centroids
             print("Initial Random Centroids:")
             print(app.centroids)
         else:
             app.step_centroids[app.step] = app.centroids.copy()
-            app.centroids = calculate_centroids() # TODO: calculate centroids from labels
-            app.converged = None # TODO: check if k-means has converged
+
+            # new centroids are the mean of the clusters
+            new_centroids = app.data.groupby(app.labels)[['x', 'y']].mean()
+            # converge if new centroids are same/similar to old centroids
+            # app.converged = np.allclose(app.centroids, new_centroids) # TODO: check if k-means has converged
+            print("new centroids size ", new_centroids.shape)
+            print("centroids normal: ", app.centroids.shape)
+            print("centroids: ", app.centroids)
+            app.converged = np.allclose(
+                app.centroids.sort_values(by=['x', 'y']).values,
+                new_centroids.sort_values(by=['x', 'y']).values,
+                atol=1e-6
+            )
+            app.centroids = new_centroids # TODO: calculate centroids from labels
+            # app.converged = None # TODO: check if k-means has converged
         set_labels()
-        print(app.labels)
         app.step += 1
         res = {
             'x_min': app.x_min, 'x_max': app.x_max, 'y_min': app.y_min, 'y_max': app.y_max,
@@ -100,7 +113,7 @@ def step_wait():
 def back():
     app.step -= 1
     app.converged = False
-    app.centroids = None # TODO: get centroids from the previous step    
+    app.centroids = app.step_centroids[app.step] # TODO: get centroids from the previous step    
     set_labels()
     return {
         'x_min': app.x_min, 'x_max': app.x_max, 'y_min': app.y_min, 'y_max': app.y_max,

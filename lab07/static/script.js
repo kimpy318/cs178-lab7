@@ -23,18 +23,26 @@ function init_scales(x_min, x_max, y_min, y_max, n_clusters){
 
 // TODO: create x and y axes
 function init_axes(){
-  // Create x-axis
-  svg.append("g")
-  .attr("transform", "translate(0," + height + ")") 
-  .call(d3.axisBottom(x)); 
+    // Remove old axes if they exist
+    svg.selectAll(".x-axis").remove();
+    svg.selectAll(".y-axis").remove();
+    
+    // Create x-axis
+    svg.append("g")
+      .attr("class", "x-axis")
+      .attr("transform", "translate(0," + height + ")") 
+      .call(d3.axisBottom(x)); 
 
-  // Create y-axis
-  svg.append("g")
-    .call(d3.axisLeft(y));
+    // Create y-axis
+    svg.append("g")
+      .attr("class", "y-axis")
+      .call(d3.axisLeft(y));
 }
 
 // TODO: plot data and centroids, and display the current step number
 function update_vis(data, centroids, step_num){
+  svg.selectAll("circle").remove()// Select all circles (both points and centroids) to clear previous points
+//   svg.selectAll("centroid").remove()
   // Plot points and color based on label
   svg.append("g")
         .selectAll("dot")
@@ -70,8 +78,9 @@ function init_plot(x_min, x_max, y_min, y_max, n_clusters, data, centroids){
 }
 
 function set_params(){
-    var dataset = document.getElementById('dataset').value // TODO: get the selected dataset
-    var n_clusters = document.getElementByID('n_clusters').value // TODO: get the selected number of clusters
+    var dataset = document.getElementById("dataset").value // TODO: get the selected dataset
+    console.log("dataset: ", dataset)
+    var n_clusters = document.getElementById("n_clusters").value // TODO: get the selected number of clusters
     fetch('/set_params', {
         method: 'POST',
         credentials: 'include',
@@ -83,12 +92,19 @@ function set_params(){
     }).then(async function(response){
         var results = JSON.parse(JSON.stringify((await response.json())))
         // TODO: initialize the plot from the results
-        console.log(results)
-        x_min = results['x_min']
-        x_max = results['x_max']
-        y_min = results['y_min']
-        y_max = results['y_max']
-        centroids = results['centroids']
+        // console.log(results)
+        // x_min = results['x_min']
+        // x_max = results['x_max']
+        // y_min = results['y_min']
+        // y_max = results['y_max']
+        // centroids = results['centroids']
+        x_min=results.x_min
+        x_max=results.x_max
+        y_min=results.y_min
+        y_max=results.y_max
+        n_clusters=results.n_clusters
+        dataset=results.data // TODO: get the dataset from results
+        centroids=results.centroids
         init_plot(x_min, x_max, y_min, y_max, n_clusters, dataset, centroids)
     })
 }
