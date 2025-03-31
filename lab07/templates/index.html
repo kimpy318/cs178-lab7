@@ -8,7 +8,7 @@
 <body>
   <div id="control">
     <div>
-        <span>dataset</span>
+        <span>Dataset</span>
         <select id="dataset" onchange="set_params()">
             {% for dataset in datasets %}
                 <option>{{dataset}}</option>
@@ -16,9 +16,26 @@
         </select>
     </div>
     <div>
-        <span>n_clusters</span>
+        <span>Number of Clusters</span>
         <input type="number" id="n_clusters" value="2" min="2" max="5" onchange="set_params()"> 
     </div>
+    <div>
+        <span>Input Initial Cluster Coordinates</span>
+        <div id="cluster-coordinates-container">
+            <div>
+            <span>Cluster 1: </span>
+            <input type="number" id="x1" placeholder="X">
+            <input type="number" id="y1" placeholder="Y">
+            </div>
+            <div>
+            <span>Cluster 2: </span>
+            <input type="number" id="x2" placeholder="X">
+            <input type="number" id="y2" placeholder="Y">
+            </div>
+        </div>
+        <button id="cluster_coords" onclick="user_input()">Enter</button>
+    </div>
+
     <div>
         <span id="step-label">step:</span>
         <span id="step">0</span>
